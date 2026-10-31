@@ -1,0 +1,18 @@
+# Composer
+/composer.lock
+/vendor/
+
+# Node
+/node_modules/
+
+# PhpUnit
+/.phpunit.result.cache
+/phpunit.xml
+
+# Others
+.DS_Store
+/.idea/
+/.phpunit.cache
+
+beispiel-llms-full.txt
+todo.md

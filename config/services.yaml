@@ -1,0 +1,26 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pdir\ContaoLlmsBundle\:
+    resource: ../src
+    exclude:
+      - ../src/ContaoManager
+      - ../src/DependencyInjection
+      - ../src/PdirContaoLlmsBundle.php
+      - ../src/Widget
+
+  Pdir\ContaoLlmsBundle\Controller\:
+    resource: ../src/Controller
+    public: true
+
+  # Public for the purge job of the system maintenance (see contao/config/config.php)
+  Pdir\ContaoLlmsBundle\Cache\LlmsCacheInvalidator:
+    public: true
+    arguments:
+      $cacheInvalidator: '@?fos_http_cache.cache_manager'
+
+  pdir.llms_generator:
+    alias: Pdir\ContaoLlmsBundle\Service\LlmsGenerator
+    public: true

@@ -1,0 +1,3 @@
+pdir_contao_llms:
+  resource: ../src/Controller
+  type: attribute

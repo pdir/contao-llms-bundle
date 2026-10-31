@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         failOnWarning="true"
+         cacheDirectory=".phpunit.cache"
+>
+    <php>
+        <ini name="date.timezone" value="Europe/Berlin"/>
+        <ini name="intl.default_locale" value="de"/>
+    </php>
+    <testsuites>
+        <testsuite name="pdir/contao-llms-bundle">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+</phpunit>

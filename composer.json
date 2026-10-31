@@ -1,0 +1,87 @@
+{
+  "name": "pdir/contao-llms-bundle",
+  "type": "contao-bundle",
+  "description": "This bundle allows you to generate a llms.txt file via the Contao backend to optimize your site for LLMs like ChatGPT, Claude, Gemini, ...",
+  "keywords": [
+    "llms",
+    "llms-txt",
+    "llms-full-txt",
+    "llm",
+    "chatgpt",
+    "ai",
+    "ki",
+    "seo",
+    "geo",
+    "optimization",
+    "crawler",
+    "machine-learning",
+    "llm-discovery",
+    "ai-indexing",
+    "ai-crawler"
+  ],
+  "license": "LGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "pdir GmbH",
+      "homepage": "https://pdir.de"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "ext-intl": "*",
+    "contao/core-bundle": "^5.3 || ^6.0",
+    "doctrine/dbal": "^3.6 || ^4.0",
+    "friendsofsymfony/http-cache": "^2.15 || ^3.0",
+    "league/html-to-markdown": "^5.1",
+    "psr/log": "^1.1 || ^2.0 || ^3.0",
+    "symfony/config": "^6.4 || ^7.4 || ^8.0",
+    "symfony/console": "^6.4 || ^7.4 || ^8.0",
+    "symfony/css-selector": "^6.4 || ^7.4 || ^8.0",
+    "symfony/dependency-injection": "^6.4 || ^7.4 || ^8.0",
+    "symfony/dom-crawler": "^6.4 || ^7.4 || ^8.0",
+    "symfony/http-client": "^6.4 || ^7.4 || ^8.0",
+    "symfony/http-client-contracts": "^3.1",
+    "symfony/http-foundation": "^6.4 || ^7.4 || ^8.0",
+    "symfony/http-kernel": "^6.4 || ^7.4 || ^8.0",
+    "symfony/routing": "^6.4 || ^7.4 || ^8.0",
+    "symfony/security-core": "^6.4 || ^7.4 || ^8.0"
+  },
+  "suggest": {
+    "contao/calendar-bundle": "To include events in the llms.txt and llms-full.txt",
+    "contao/news-bundle": "To include news in the llms.txt and llms-full.txt"
+  },
+  "conflict": {
+    "contao/manager-plugin": "<2.0 || >=3.0"
+  },
+  "require-dev": {
+    "contao/manager-plugin": "^2.0",
+    "friendsofphp/php-cs-fixer": "^3.84",
+    "vincentlanglet/twig-cs-fixer": "^3.8",
+    "phpunit/phpunit": "^10.5 || ^11.5 || ^12.0",
+    "contao/news-bundle": "^5.3 || ^6.0",
+    "contao/calendar-bundle": "^5.3 || ^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Pdir\\ContaoLlmsBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Pdir\\ContaoLlmsBundle\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "contao-manager-plugin": "Pdir\\ContaoLlmsBundle\\ContaoManager\\Plugin"
+  },
+  "config": {
+    "allow-plugins": {
+      "contao-components/installer": true,
+      "php-http/discovery": true,
+      "contao/manager-plugin": true
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
+}
