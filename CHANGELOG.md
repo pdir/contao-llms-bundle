@@ -12,7 +12,7 @@ Types of changes
 
 ## [1.1.0](https://github.com/pdir/contao-llms-bundle/tree/1.1.0) – 2026-11-02
 
-- [Fixed] Root pages with a URL prefix (e.g. `de`): `/de/llms.txt` and `/de/llms-full.txt` returned a 404 error. They now contain only the root page with this URL prefix; `/llms.txt` and `/llms-full.txt` still contain all root pages of the domain
+- [Added] Language-specific files for root pages with a URL prefix (e.g. `de`): `/de/llms.txt` and `/de/llms-full.txt` (previously a 404 error) contain only the root page with this URL prefix; `/llms.txt` and `/llms-full.txt` still contain all root pages of the domain
 - [Added] Every front end page links the llms.txt with `rel="describedby"` as HTML `<link>` and HTTP `Link` header (option in the root page, enabled by default)
 - [Changed] `pdir:llms:generate` also requests the files of every URL prefix
 
