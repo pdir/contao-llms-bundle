@@ -62,7 +62,7 @@ class LlmsGenerateCommand extends Command
                     ++$generated;
                     $io->writeln('Generated '.$url);
                 } elseif (Response::HTTP_NOT_FOUND === $status) {
-                    // The file is disabled in the root page
+                    // The file is disabled in the root page (or the root page with this URL prefix)
                     $io->writeln('Skipped '.$url, OutputInterface::VERBOSITY_VERBOSE);
                 } else {
                     $failed = true;
@@ -86,29 +86,51 @@ class LlmsGenerateCommand extends Command
     }
 
     /**
-     * Returns the base URL of every domain of the published root pages. Root
-     * pages without a domain use the default URI of the application.
+     * Returns the base URL of every domain of the published root pages and,
+     * for root pages with a URL prefix, the base URL with the prefix (e.g.
+     * https://example.org/de for /de/llms.txt). Root pages without a domain
+     * use the default URI of the application.
      *
      * @return list<string>
      */
     private function getBaseUrls(SymfonyStyle $io, bool &$failed): array
     {
-        $rows = $this->connection->fetchAllAssociative('SELECT dns, MAX(useSSL) AS useSSL FROM tl_page WHERE type = ? AND published = ? GROUP BY dns', ['root', 1]);
-        $baseUrls = [];
+        $rows = $this->connection->fetchAllAssociative('SELECT dns, useSSL, urlPrefix FROM tl_page WHERE type = ? AND published = ? ORDER BY sorting', ['root', 1]);
+        $hosts = [];
+        $prefixes = [];
 
         foreach ($rows as $row) {
             $dns = (string) $row['dns'];
+            $hosts[$dns] = ($hosts[$dns] ?? false) || (bool) $row['useSSL'];
 
-            if ('' !== $dns) {
-                $baseUrls[] = ($row['useSSL'] ? 'https://' : 'http://').$dns;
-            } elseif ('localhost' === $this->requestContext->getHost()) {
-                $failed = true;
-                $io->error('A root page has no domain. Enter one in the root page or set the DEFAULT_URI environment variable.');
-            } else {
-                $baseUrls[] = $this->requestContext->getScheme().'://'.$this->requestContext->getHost();
+            if ('' !== ($urlPrefix = (string) ($row['urlPrefix'] ?? ''))) {
+                $prefixes[$dns][] = $urlPrefix;
             }
         }
 
-        return array_values(array_unique($baseUrls));
+        $domainUrls = [];
+        $prefixUrls = [];
+
+        foreach ($hosts as $dns => $useSSL) {
+            if ('' !== $dns) {
+                $baseUrl = ($useSSL ? 'https://' : 'http://').$dns;
+            } elseif ('localhost' === $this->requestContext->getHost()) {
+                $failed = true;
+                $io->error('A root page has no domain. Enter one in the root page or set the DEFAULT_URI environment variable.');
+
+                continue;
+            } else {
+                $baseUrl = $this->requestContext->getScheme().'://'.$this->requestContext->getHost();
+            }
+
+            $domainUrls[] = $baseUrl;
+
+            foreach ($prefixes[$dns] ?? [] as $urlPrefix) {
+                $prefixUrls[] = $baseUrl.'/'.$urlPrefix;
+            }
+        }
+
+        // The files of the whole domain come first, the language-specific ones reuse their contents
+        return array_values(array_unique([...$domainUrls, ...$prefixUrls]));
     }
 }

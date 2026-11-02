@@ -15,6 +15,7 @@ $GLOBALS['TL_LANG']['tl_page']['llmsSection'] = ['LLMs section', 'Section of the
 $GLOBALS['TL_LANG']['tl_page']['llmsImages'] = ['LLMs images', 'Images that are output in the llms-full.txt below the page description. Images of the page content are always removed. The alternative text of the file is used as image description, otherwise the caption or the title.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsGuidelines'] = ['Output usage guidelines', 'Outputs usage and attribution guidelines at the end of the LLMs files.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsSitemap'] = ['Link sitemap', 'Links the sitemap.xml in the "Optional" section of the llms.txt.'];
+$GLOBALS['TL_LANG']['tl_page']['llmsDescribedBy'] = ['Link llms.txt on all pages', 'Points to the llms.txt from every page with rel="describedby", in the HTML head and in the HTTP Link header. This helps crawlers find the file, with URL prefixes the language-specific one (e.g. /de/llms.txt).'];
 $GLOBALS['TL_LANG']['tl_page']['llmsExcludeNews'] = ['Exclude news', 'Does not include the news of the news bundle in the LLMs files.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsExcludeEvents'] = ['Exclude events', 'Does not include the events of the calendar bundle in the LLMs files.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsLegalPages'] = ['Legal pages', 'Pages such as imprint, privacy policy and accessibility statement. They are linked in the "Legal" section before the contact details and do not appear in other sections. Without a selection, the section is omitted.'];

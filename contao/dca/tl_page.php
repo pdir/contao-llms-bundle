@@ -19,6 +19,7 @@ PaletteManipulator::create()
     ->addField('llmsFull', 'llms_legend', PaletteManipulator::POSITION_APPEND)
     ->addField('llmsFullTxt', 'llms_legend', PaletteManipulator::POSITION_APPEND)
     ->addField('llmsSitemap', 'llms_legend', PaletteManipulator::POSITION_APPEND)
+    ->addField('llmsDescribedBy', 'llms_legend', PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('root', 'tl_page')
     ->applyToPalette('rootfallback', 'tl_page');
 
@@ -62,6 +63,13 @@ $GLOBALS['TL_DCA']['tl_page']['fields'] += [
         'inputType' => 'checkbox',
         'eval' => ['tl_class' => 'w50 m12 clr'],
         'sql' => ['type' => 'boolean', 'default' => false]
+    ],
+
+    // Link the llms.txt from every page with rel="describedby" (HTML and HTTP header)
+    'llmsDescribedBy' => [
+        'inputType' => 'checkbox',
+        'eval' => ['tl_class' => 'w50 m12'],
+        'sql' => ['type' => 'boolean', 'default' => true]
     ],
 
     'llmsTxt' => [

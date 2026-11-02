@@ -146,6 +146,19 @@ class LlmsGeneratorTest extends TestCase
         $this->assertStringContainsString("## Rechtliches\n\n- [Impressum (de)](https://example.org/impressum)\n- [Imprint (en)](https://example.org/en/imprint)", $content);
     }
 
+    public function testLinksTheLlmsFullTxtWithTheUrlPrefix(): void
+    {
+        $rootPage = $this->createRootPage(['llmsFull' => true, 'llmsSitemap' => true]);
+        $sections = [['root' => $rootPage, 'items' => [$this->createPageItem(2, 'Startseite', 'https://example.org/de/')], 'legal' => []]];
+
+        $content = $this->createGenerator()->generateBasic($rootPage, $sections, self::START_PAGE, 'de/');
+
+        $this->assertStringContainsString('[llms-full.txt](https://example.org/de/llms-full.txt)', $content);
+
+        // The sitemap is not language-specific
+        $this->assertStringContainsString('[Sitemap](https://example.org/sitemap.xml)', $content);
+    }
+
     public function testTranslatesTheFixedTexts(): void
     {
         $rootPage = $this->createRootPage(['language' => 'en', 'llmsEmail' => 'info@example.org', 'llmsGuidelines' => true]);

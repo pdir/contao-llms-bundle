@@ -51,6 +51,35 @@ class LlmsGenerateCommandTest extends TestCase
         $this->assertSame(['https://example.org/llms-full.txt', 'https://example.org/llms.txt'], $urls);
     }
 
+    public function testRequestsTheFilesOfEveryUrlPrefix(): void
+    {
+        $urls = [];
+
+        $tester = $this->createTester(
+            [
+                ['dns' => 'example.org', 'useSSL' => 1, 'urlPrefix' => 'de'],
+                ['dns' => 'example.org', 'useSSL' => 1, 'urlPrefix' => 'en'],
+                ['dns' => 'example.com', 'useSSL' => 1, 'urlPrefix' => ''],
+            ],
+            static function (Request $request) use (&$urls): Response {
+                $urls[] = $request->getUri();
+
+                return new Response();
+            },
+        );
+
+        $this->assertSame(Command::SUCCESS, $tester->execute([]));
+        $this->assertSame(
+            [
+                'https://example.org/llms-full.txt', 'https://example.org/llms.txt',
+                'https://example.com/llms-full.txt', 'https://example.com/llms.txt',
+                'https://example.org/de/llms-full.txt', 'https://example.org/de/llms.txt',
+                'https://example.org/en/llms-full.txt', 'https://example.org/en/llms.txt',
+            ],
+            $urls,
+        );
+    }
+
     public function testFailsForRootPagesWithoutAnyDomain(): void
     {
         $tester = $this->createTester(

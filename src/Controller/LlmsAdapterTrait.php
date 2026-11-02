@@ -27,14 +27,31 @@ trait LlmsAdapterTrait
      * Returns the fallback root page of the current host and all published
      * root pages of the same domain that have the given flag enabled.
      *
+     * With a URL prefix (e.g. /de/llms.txt), only the root page of the
+     * current host with this URL prefix is returned.
+     *
      * @return array{0: PageModel, 1: list<PageModel>}
      */
-    private function getRootPages(Request $request, string $flag): array
+    private function getRootPages(Request $request, string $flag, string $urlPrefix = ''): array
     {
         $pageModelAdapter = $this->getContaoAdapter(PageModel::class);
 
         /** @var PageModel|null $rootPage */
         $rootPage = $pageModelAdapter->findPublishedFallbackByHostname($request->getHost(), ['fallbackToEmpty' => true]);
+
+        if ('' !== $urlPrefix) {
+            if (null === $rootPage) {
+                throw new NotFoundHttpException();
+            }
+
+            foreach ($pageModelAdapter->findPublishedRootPages(['dns' => $rootPage->dns]) ?? [] as $page) {
+                if ($urlPrefix === (string) $page->urlPrefix && $page->{$flag} && !$page->maintenanceMode) {
+                    return [$page, [$page]];
+                }
+            }
+
+            throw new NotFoundHttpException();
+        }
 
         if (null === $rootPage || !$rootPage->{$flag}) {
             throw new NotFoundHttpException();

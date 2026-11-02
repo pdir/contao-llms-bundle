@@ -63,10 +63,27 @@ In der Legende **LLMs-Einstellungen**:
 | LLMs-E-Mail-Adresse, LLMs-Telefon | Kontaktangaben im Abschnitt „Kontakt“; die E-Mail-Adresse erscheint auch als Support-Adresse in der `llms-full.txt`. Leere Felder werden nicht ausgegeben |
 | Nutzungshinweise ausgeben | Gibt Hinweise zur Nutzung und Quellenangabe aus (standardmäßig aktiv) |
 | Sitemap verlinken | Verlinkt die `sitemap.xml` im Abschnitt `Optional` der `llms.txt` (standardmäßig aus) |
+| llms.txt auf allen Seiten verlinken | Verweist auf jeder Seite per `rel="describedby"` auf die `llms.txt`, damit Crawler sie finden (standardmäßig aktiv, siehe unten) |
 | Nachrichten ausschließen, Termine ausschließen | Nimmt Nachrichten bzw. Termine nicht in die Dateien auf; nur sichtbar, wenn das jeweilige Bundle installiert ist |
 | Rechtliche Seiten | Seiten wie Impressum, Datenschutz und Barrierefreiheit für den Abschnitt „Rechtliches“ (siehe unten) |
 
 Die Dateien werden über die **Sprachen-Fallback-Root-Seite** der Domain ausgeliefert. Dort muss die jeweilige Option aktiviert sein. Weitere Root-Seiten derselben Domain werden aufgenommen, wenn die Option auch bei ihnen aktiviert ist.
+
+Haben die Root-Seiten ein **Sprachkürzel** (URL-Präfix, z. B. `de`), gibt es zusätzlich sprachspezifische Dateien wie `/de/llms.txt` und `/de/llms-full.txt`. Sie enthalten nur die Seiten dieser Root-Seite und verwenden deren LLMs-Einstellungen; dafür muss die Option bei dieser Root-Seite aktiviert sein. Die `/de/llms.txt` verlinkt entsprechend auf die `/de/llms-full.txt`.
+
+#### Verweis per rel="describedby"
+
+Ist die `llms.txt` aktiviert, verweist jede Seite der Root-Seite auf sie, und zwar auf zwei Wegen:
+
+```html
+<link rel="describedby" href="https://example.org/de/llms.txt" type="text/plain">
+```
+
+```
+Link: <https://example.org/de/llms.txt>; rel="describedby"; type="text/plain"
+```
+
+Der `<link>` steht im HTML-Kopf, der Header ist auch über einen `HEAD`-Request ohne Auswerten des HTML sichtbar. Bei Root-Seiten mit Sprachkürzel zeigt der Verweis auf die sprachspezifische Datei, sonst auf `/llms.txt`. Die `llms-full.txt` wird nicht verlinkt, sie ist in der `llms.txt` aufgeführt. Ausschalten lässt sich der Verweis über die Option „llms.txt auf allen Seiten verlinken“.
 
 ### Reguläre Seiten
 
@@ -278,7 +295,7 @@ Hinweise:
 
 ## LLMs-Daten vorab erzeugen
 
-Ohne Vorab-Erzeugung werden abgelaufene Inhalte beim ersten Aufruf der `llms-full.txt` neu erzeugt, bei großen Websites kann dieser Aufruf entsprechend dauern. Der Konsolenbefehl übernimmt das stattdessen für alle Domains:
+Ohne Vorab-Erzeugung werden abgelaufene Inhalte beim ersten Aufruf der `llms-full.txt` neu erzeugt, bei großen Websites kann dieser Aufruf entsprechend dauern. Der Konsolenbefehl übernimmt das stattdessen für alle Domains und Sprachkürzel (z. B. auch `/de/llms.txt`):
 
 ```bash
 vendor/bin/contao-console pdir:llms:generate

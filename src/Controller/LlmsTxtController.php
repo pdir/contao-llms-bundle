@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @internal
  */
 #[Route('/llms.txt', name: 'pdir_contao_llms_txt', defaults: ['_scope' => 'frontend'])]
+#[Route('/{urlPrefix}/llms.txt', name: 'pdir_contao_llms_txt_prefixed', requirements: ['urlPrefix' => '.+'], defaults: ['_scope' => 'frontend'])]
 class LlmsTxtController extends AbstractController
 {
     use LlmsAdapterTrait;
@@ -29,16 +30,16 @@ class LlmsTxtController extends AbstractController
     ) {
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, string $urlPrefix = ''): Response
     {
         $this->initializeContaoFramework();
 
-        [$rootPage, $rootPages] = $this->getRootPages($request, 'llms');
+        [$rootPage, $rootPages] = $this->getRootPages($request, 'llms', $urlPrefix);
 
         $sections = $this->getSections($rootPages);
         $startPage = $request->getSchemeAndHttpHost() . $request->getBasePath() . '/';
 
-        $content = $this->generator->generateBasic($rootPage, $sections, $startPage);
+        $content = $this->generator->generateBasic($rootPage, $sections, $startPage, '' !== $urlPrefix ? $urlPrefix.'/' : '');
 
         // @todo dispatch an event so that other extensions can modify the content
 

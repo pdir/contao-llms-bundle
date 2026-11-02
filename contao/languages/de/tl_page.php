@@ -15,6 +15,7 @@ $GLOBALS['TL_LANG']['tl_page']['llmsSection'] = ['LLMs-Abschnitt', 'Abschnitt de
 $GLOBALS['TL_LANG']['tl_page']['llmsImages'] = ['LLMs-Bilder', 'Bilder, die in der llms-full.txt unter der Seitenbeschreibung ausgegeben werden. Bilder aus dem Seiteninhalt werden immer entfernt. Als Bildbeschreibung dient der Alternativtext der Datei, sonst die Bildunterschrift oder der Titel.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsGuidelines'] = ['Nutzungshinweise ausgeben', 'Gibt Hinweise zur Nutzung und Quellenangabe am Ende der LLMs-Dateien aus.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsSitemap'] = ['Sitemap verlinken', 'Verlinkt die sitemap.xml im Abschnitt „Optional“ der llms.txt.'];
+$GLOBALS['TL_LANG']['tl_page']['llmsDescribedBy'] = ['llms.txt auf allen Seiten verlinken', 'Verweist auf jeder Seite per rel="describedby" auf die llms.txt, im HTML-Kopf und im HTTP-Link-Header. So finden Crawler die Datei, bei Sprachkürzeln die sprachspezifische (z. B. /de/llms.txt).'];
 $GLOBALS['TL_LANG']['tl_page']['llmsExcludeNews'] = ['Nachrichten ausschließen', 'Nimmt die Nachrichten des News-Bundles nicht in die LLMs-Dateien auf.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsExcludeEvents'] = ['Termine ausschließen', 'Nimmt die Termine des Calendar-Bundles nicht in die LLMs-Dateien auf.'];
 $GLOBALS['TL_LANG']['tl_page']['llmsLegalPages'] = ['Rechtliche Seiten', 'Seiten wie Impressum, Datenschutz und Barrierefreiheit. Sie werden im Abschnitt „Rechtliches“ vor dem Kontakt verlinkt und erscheinen nicht in anderen Abschnitten. Ohne Auswahl entfällt der Abschnitt.'];

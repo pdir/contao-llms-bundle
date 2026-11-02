@@ -4,9 +4,12 @@ namespace Pdir\ContaoLlmsBundle\Tests\Controller;
 
 use Contao\CalendarEventsModel;
 use Contao\CoreBundle\InsertTag\InsertTagParser;
+use Contao\PageModel;
 use Pdir\ContaoLlmsBundle\Controller\LlmsAdapterTrait;
 use Pdir\ContaoLlmsBundle\Tests\Fixtures\ModelFactoryTrait;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LlmsAdapterTraitTest extends TestCase
 {
@@ -83,6 +86,90 @@ class LlmsAdapterTraitTest extends TestCase
     public function testConvertsHtmlToPlainText(): void
     {
         $this->assertSame('Seit 2026 am Markt.', $this->createAdapter()->toPlainText("<p>Seit {{date::Y}}\n   am <em>Markt</em>.</p>"));
+    }
+
+    public function testReturnsAllRootPagesOfTheDomainWithoutUrlPrefix(): void
+    {
+        [$german, $english, $french] = $this->createRootPages();
+
+        $this->assertSame([$german, [$german, $english]], $this->createRootPageAdapter($german, [$german, $english, $french])->getRootPages(Request::create('https://example.org/llms.txt'), 'llms'));
+    }
+
+    public function testReturnsTheRootPageOfTheUrlPrefix(): void
+    {
+        [$german, $english, $french] = $this->createRootPages();
+        $adapter = $this->createRootPageAdapter($german, [$german, $english, $french]);
+
+        $this->assertSame([$german, [$german]], $adapter->getRootPages(Request::create('https://example.org/de/llms.txt'), 'llms', 'de'));
+        $this->assertSame([$english, [$english]], $adapter->getRootPages(Request::create('https://example.org/en/llms.txt'), 'llms', 'en'));
+    }
+
+    public function testThrowsNotFoundForUnknownOrDisabledUrlPrefixes(): void
+    {
+        [$german, $english, $french] = $this->createRootPages();
+        $adapter = $this->createRootPageAdapter($german, [$german, $english, $french]);
+
+        foreach (['fr', 'it'] as $urlPrefix) {
+            try {
+                $adapter->getRootPages(Request::create('https://example.org/'.$urlPrefix.'/llms.txt'), 'llms', $urlPrefix);
+                $this->fail('Expected a NotFoundHttpException for '.$urlPrefix);
+            } catch (NotFoundHttpException) {
+                $this->addToAssertionCount(1);
+            }
+        }
+    }
+
+    /**
+     * @return list<PageModel>
+     */
+    private function createRootPages(): array
+    {
+        return [
+            $this->createModel(PageModel::class, ['id' => 1, 'dns' => 'example.org', 'urlPrefix' => 'de', 'llms' => true, 'maintenanceMode' => false]),
+            $this->createModel(PageModel::class, ['id' => 2, 'dns' => 'example.org', 'urlPrefix' => 'en', 'llms' => true, 'maintenanceMode' => false]),
+            $this->createModel(PageModel::class, ['id' => 3, 'dns' => 'example.org', 'urlPrefix' => 'fr', 'llms' => false, 'maintenanceMode' => false]),
+        ];
+    }
+
+    /**
+     * @param list<PageModel> $rootPages
+     */
+    private function createRootPageAdapter(PageModel $fallback, array $rootPages): object
+    {
+        // Stands in for the Contao adapter of the PageModel class
+        $pageAdapter = new class($fallback, $rootPages) {
+            public function __construct(private readonly PageModel $fallback, private readonly array $rootPages)
+            {
+            }
+
+            public function findPublishedFallbackByHostname(): PageModel
+            {
+                return $this->fallback;
+            }
+
+            public function findPublishedRootPages(): array
+            {
+                return $this->rootPages;
+            }
+        };
+
+        return new class($pageAdapter) {
+            use LlmsAdapterTrait;
+
+            public function __construct(private readonly object $pageAdapter)
+            {
+            }
+
+            public function __call(string $method, array $arguments): mixed
+            {
+                return $this->{$method}(...$arguments);
+            }
+
+            private function getContaoAdapter(string $class): object
+            {
+                return $this->pageAdapter;
+            }
+        };
     }
 
     private function createEvent(int $startTime, int $endTime, array|null $repeatEach = null, int $recurrences = 0, string $location = '', string $description = '', string $teaser = ''): CalendarEventsModel

@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @internal
  */
 #[Route('/llms-full.txt', name: 'pdir_contao_llms_full_txt', defaults: ['_scope' => 'frontend'])]
+#[Route('/{urlPrefix}/llms-full.txt', name: 'pdir_contao_llms_full_txt_prefixed', requirements: ['urlPrefix' => '.+'], defaults: ['_scope' => 'frontend'])]
 class LlmsFullTxtController extends AbstractController
 {
     use LlmsAdapterTrait;
@@ -29,11 +30,11 @@ class LlmsFullTxtController extends AbstractController
     ) {
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, string $urlPrefix = ''): Response
     {
         $this->initializeContaoFramework();
 
-        [$rootPage, $rootPages] = $this->getRootPages($request, 'llmsFull');
+        [$rootPage, $rootPages] = $this->getRootPages($request, 'llmsFull', $urlPrefix);
 
         $sections = $this->getSections($rootPages);
         $startPage = $request->getSchemeAndHttpHost() . $request->getBasePath() . '/';
