@@ -17,6 +17,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class LlmsGenerator
 {
     /**
+     * Markup between these comments is not added to the LLMs files, e.g. content
+     * elements with the option "Exclude from LLMs files" (see
+     * LlmsExcludeListener). They can also be used in templates.
+     */
+    public const EXCLUDE_START = '<!-- llms::stop -->';
+
+    public const EXCLUDE_END = '<!-- llms::continue -->';
+
+    /**
      * Generated page contents are refreshed at least once within this period
      * (in seconds), even if the page itself has not changed.
      */
@@ -554,7 +563,7 @@ class LlmsGenerator
      */
     private function htmlToMarkdown(string $html, string $url): string
     {
-        $crawler = new Crawler($html, $url);
+        $crawler = new Crawler($this->removeExcludedMarkup($html), $url);
 
         // Only convert the main content area, not the whole layout
         foreach (['#main', 'main', 'body'] as $selector) {
@@ -572,6 +581,22 @@ class LlmsGenerator
         }
 
         return '';
+    }
+
+    /**
+     * Removes the markup between EXCLUDE_START and EXCLUDE_END. Nested pairs
+     * (e.g. an excluded element inside an excluded element group) are removed
+     * from the inside out. A start comment without an end is ignored.
+     */
+    private function removeExcludedMarkup(string $html): string
+    {
+        $pattern = '/'.preg_quote(self::EXCLUDE_START, '/').'(?:(?!'.preg_quote(self::EXCLUDE_START, '/').').)*?'.preg_quote(self::EXCLUDE_END, '/').'/s';
+
+        do {
+            $html = preg_replace($pattern, '', $html, -1, $count) ?? $html;
+        } while ($count > 0);
+
+        return $html;
     }
 
     private function toMarkdown(string $html): string

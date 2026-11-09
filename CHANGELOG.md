@@ -10,6 +10,12 @@ Types of changes
     Security in case of vulnerabilities.
 )
 
+## [1.2.0](https://github.com/pdir/contao-llms-bundle/tree/1.2.0) – 2026-11-09
+
+- [Added] Option „Exclude from LLMs files“ for every content element (also of other bundles), e.g. for logos or sliders; the element remains visible on the website
+- [Added] Option „Exclude from LLMs files“ for articles: the article is not added to the `llms-full.txt`, its teaser is not listed in the `llms.txt`
+- [Added] Markup between `<!-- llms::stop -->` and `<!-- llms::continue -->` is not added to the `llms-full.txt` and can be used in templates
+
 ## [1.1.0](https://github.com/pdir/contao-llms-bundle/tree/1.1.0) – 2026-11-02
 
 - [Added] Language-specific files for root pages with a URL prefix (e.g. `de`): `/de/llms.txt` and `/de/llms-full.txt` (previously a 404 error) contain only the root page with this URL prefix; `/llms.txt` and `/llms-full.txt` still contain all root pages of the domain

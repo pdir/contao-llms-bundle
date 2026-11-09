@@ -624,6 +624,16 @@ class LlmsGeneratorTest extends TestCase
             "Vorher.\n\nNachher.",
         ];
 
+        yield 'excluded content elements are removed' => [
+            '<p>Vorher.</p><!-- llms::stop --><div class="c-logos"><p>Logos</p></div><!-- llms::continue --><p>Mitte.</p><!-- llms::stop --><div>Gruppe<!-- llms::stop --><p>Kind</p><!-- llms::continue --><p>Rest</p></div><!-- llms::continue --><p>Nachher.</p>',
+            "Vorher.\n\nMitte.\n\nNachher.",
+        ];
+
+        yield 'a start marker without end is ignored' => [
+            '<p>Vorher.</p><!-- llms::stop --><p>Nachher.</p>',
+            "Vorher.\n\nNachher.",
+        ];
+
         yield 'scripts, forms and navigation are removed' => [
             '<p>Text</p><script>alert(1)</script><form><input name="q"></form><nav>Menü</nav>',
             'Text',

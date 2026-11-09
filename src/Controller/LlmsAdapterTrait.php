@@ -243,6 +243,10 @@ trait LlmsAdapterTrait
                     // Get articles with teaser
                     if (null !== ($articleModels = $articleModelAdapter->findPublishedWithTeaserByPid($pageModel->id, ['ignoreFePreview' => true]))) {
                         foreach ($articleModels as $articleModel) {
+                            if ($articleModel->llmsExclude) {
+                                continue;
+                            }
+
                             $result[] = [
                                 'type' => 'article',
                                 'model' => $articleModel,

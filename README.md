@@ -15,6 +15,7 @@ Stellt für Contao-Websites automatisch eine [`llms.txt`](https://llmstxt.org/) 
 - Mehrsprachige Websites: alle Root-Seiten einer Domain erscheinen in einer gemeinsamen Datei
 - Generierte Inhalte werden gespeichert und nur neu erzeugt, wenn sich die Seite geändert hat; manuelles Überschreiben möglich
 - Bilder aus dem Seiteninhalt werden entfernt; gezielt ausgewählte Bilder pro Seite
+- Einzelne Artikel und Inhaltselemente (z. B. Logos oder Slider) lassen sich von den LLMs-Dateien ausschließen
 - Relative Links werden zu absoluten URLs, Insert-Tags in Teasern werden ersetzt
 - HTTP-Caching mit automatischer Invalidierung bei Änderungen im Backend
 - `Last-Modified`-Header mit dem Zeitpunkt der letzten inhaltlichen Änderung
@@ -275,6 +276,7 @@ Das gilt auch für gespeicherte und manuell überschriebene Inhalte.
 Für jede Seite ruft das Bundle die gerenderte Seite per HTTP ab und wandelt den Hauptbereich (`#main`) in Markdown um:
 
 - Navigation, Header, Footer, Formulare und Skripte werden entfernt, ebenso Bilder (inklusive Bildunterschrift) und Links ohne Text. Bilder lassen sich stattdessen pro Seite auswählen (siehe [Reguläre Seiten](#reguläre-seiten)).
+- Artikel und Inhaltselemente mit der Option **Nicht in LLMs-Dateien aufnehmen** werden entfernt (siehe [Artikel und Inhaltselemente ausschließen](#artikel-und-inhaltselemente-ausschließen)).
 - Teile einer Überschrift, die nur per CSS getrennt sind (z. B. Dachzeile und Überschrift in zwei `<span>`), werden mit einem Doppelpunkt verbunden: aus „So funktioniert es“ und „In vier Schritten“ wird „So funktioniert es: In vier Schritten“. Zeilenumbrüche in Überschriften werden zu Leerzeichen.
 - Links erhalten absolute URLs.
 - Tabellen werden als Markdown-Tabellen ausgegeben, inklusive Beschriftung und Fußzeile. Tabellen ohne Kopfzeile erhalten eine leere, Tabellen ohne Inhalt werden weggelassen. Zeilenumbrüche in Zellen werden zu Leerzeichen.
@@ -292,6 +294,23 @@ Hinweise:
 - Nach einem Update des Bundles werden gespeicherte Inhalte erst nach und nach neu erzeugt. Inhalte aus Vorabversionen haben um zwei Ebenen herabgestufte Überschriften, die bis zur Neuerzeugung als fetter Text erscheinen. Überzählige Leerzeilen werden zwar sofort bei der Ausgabe entfernt, andere Verbesserungen der Umwandlung greifen aber erst mit der Neuerzeugung.
 - Manuell überschriebene Seitenbeschreibungen werden unverändert ausgegeben, nur überzählige Leerzeilen werden entfernt.
 - Um alle gespeicherten Inhalte sofort neu zu erzeugen, siehe [LLMs-Daten leeren](#llms-daten-leeren).
+
+## Artikel und Inhaltselemente ausschließen
+
+Jeder Artikel und jedes Inhaltselement hat in der Legende **LLMs-Einstellungen** die Option **Nicht in LLMs-Dateien aufnehmen**. Das eignet sich für Inhalte ohne Informationswert für Sprachmodelle, z. B. Logoleisten, Slider oder Cookie-Hinweise. Auf der Website bleiben sie sichtbar.
+
+- **Artikel:** Der Artikel mit allen Inhaltselementen fehlt in der `llms-full.txt`, sein Teaser erscheint nicht in der `llms.txt`.
+- **Inhaltselemente:** Die Option steht in allen Elementtypen zur Verfügung, auch in denen anderer Erweiterungen oder Themes. Bei verschachtelten Elementen (z. B. Akkordeon oder Elementgruppe) wird mit dem Elternelement auch der gesamte Inhalt ausgeschlossen. Das gilt für Seiten ebenso wie für die Inhaltselemente von Nachrichten und Terminen.
+
+Technisch wird die Ausgabe des Artikels bzw. Elements in zwei HTML-Kommentare eingeschlossen, deren Inhalt bei der Umwandlung in Markdown entfällt. Dieselben Kommentare lassen sich auch direkt in Templates verwenden, z. B. für Teile eines Moduls:
+
+```html
+<!-- llms::stop -->
+<div class="partner-logos">…</div>
+<!-- llms::continue -->
+```
+
+Die Änderung der Option gilt wie jede Änderung an einem Artikel oder Inhaltselement als Änderung der Seite, die Seite wird also beim nächsten Aufruf der `llms-full.txt` neu erzeugt. Bei Änderungen an Templates die [LLMs-Daten leeren](#llms-daten-leeren).
 
 ## LLMs-Daten vorab erzeugen
 
